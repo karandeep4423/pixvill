@@ -32,7 +32,7 @@ const Navbar: React.FC<NavbarProps> = ({ navItems }) => {
     <nav className=" flex justify-between h-20 px-4 xl:px-0 max-w-screen-xl m-auto">
       <Link href="/">
         <div className="my-5 text-2xl font-medium h-fit  border-4 px-2 text-center border-black">
-          <h2>Photo Grid</h2>
+          <h2>PixVill</h2>
         </div>
       </Link>
       {/* menu and close div */}

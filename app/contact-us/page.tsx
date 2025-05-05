@@ -1,5 +1,10 @@
+import dynamic from "next/dynamic";
 import { Metadata } from "next";
-import Contact from "@/components/contact-us/page";
+
+// Dynamically import client component with SSR disabled
+const Contact = dynamic(() => import("@/components/contact-us/page"), {
+  ssr: false,
+});
 
 export const metadata: Metadata = {
   title: "Connect With Us for any query",
@@ -10,4 +15,5 @@ export const metadata: Metadata = {
 const ContactPage = () => {
   return <Contact />;
 };
+
 export default ContactPage;

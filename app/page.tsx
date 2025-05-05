@@ -53,7 +53,7 @@ export default function Home() {
         </div>
         <div>
           <h1 className="text-3xl sm:text-5xl text-gray-700 text-center font-bold">
-            Welcome to <span className="text-sky-600">PhotoGrid,</span>your
+            Welcome to <span className="text-sky-600">Pixvill,</span>your
             vibrant canvas for wishes!
             <span className="text-pink-400"> Immerse yourself in a world </span>
             where words transform into{" "}
@@ -63,8 +63,8 @@ export default function Home() {
             From heartfelt good morning greetings to celebratory birthday
             wishes, we&apos;ve curated an extensive collection that transcends
             language barriers. Whether you&apos;re sending love, encouragement,
-            or congratulations, PhotoGrid lets you express it visually. Explore
-            our wish-filled gallery at Photo-Grid.org!
+            or congratulations, Pixvill lets you express it visually. Explore
+            our wish-filled gallery at PixVill.com!
           </p>
         </div>
       </div>

@@ -8,16 +8,16 @@ const Footer = () => {
           <div className="flex flex-col space-y-4 pt-10 w-64">
             <h2 className="text-white font-medium text-xl border-4 border-white w-fit px-1">
               {" "}
-              Photo Grid
+              PixVill
             </h2>
             <p className="text-gray-300 font-medium">
-              Discover a diverse array of wishful images at Photo Grid, where
+              Discover a diverse array of wishful images at Pixvill, where
               every sentiment is beautifully captured.Explore the art of
-              heartfelt communication through images on Photo Grid.
+              heartfelt communication through images on Pixvill.
             </p>
           </div>
           <div className="flex flex-col text-gray-300 font-medium space-y-4 pt-10">
-            <h2 className="text-xl font-medium text-white">Italian Images</h2>
+            <h2 className="text-xl font-medium text-white">Punjabi Images</h2>
             <Link href="/immagini-buongiorno">Immagini Buongiorno</Link>
             <Link href="/immagini-buonanotte">Immagini Buonanotte</Link>
             <Link href="/buongiorno-amore-mio">Buongiorno amore mio</Link>
@@ -26,7 +26,7 @@ const Footer = () => {
               Buongiorno gratis
             </Link>
           </div>
-          <div className="flex flex-col text-gray-300 font-medium space-y-4 pt-10">
+          {/* <div className="flex flex-col text-gray-300 font-medium space-y-4 pt-10">
             <h2 className="text-xl font-medium text-white">Polish Images</h2>
             <Link href="/kartki-na-dobranoc">kartki na dobranoc</Link>
             <Link href="/nowe-obrazki-na-dobranoc">
@@ -41,7 +41,7 @@ const Footer = () => {
             <Link href="/urocze-obrazki-na-dobranoc">
               Urocze obrazki na dobranoc{" "}
             </Link>
-          </div>
+          </div> */}
           <div className="flex flex-col text-gray-300 font-medium space-y-4 pt-10">
             <h2 className="text-xl text-white font-medium">Contact us</h2>
             <p>Bachiwind, Amritsar</p>

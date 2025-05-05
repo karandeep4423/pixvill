@@ -1,9 +1,9 @@
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export default async function sitemap() {
-  const baseUrl = "https://photo-grid.org";
+  const baseUrl = "https://pixvill.com";
 
-  const res = await fetch("https://photo-grid.org/api/images");
+  const res = await fetch("http://localhost:3000/api/images?params=immagini-buonanotte");
 
   const result = await res.json();
 
