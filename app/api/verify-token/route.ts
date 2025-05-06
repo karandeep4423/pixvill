@@ -1,8 +1,6 @@
-// File path: pages/api/verify-token.ts
 import { NextResponse, NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
 
-// TypeScript interface for JWT payload
 interface JwtPayload {
   id: string;
   iat: number;
@@ -10,8 +8,11 @@ interface JwtPayload {
   [key: string]: any;
 }
 
-export async function POST(req: NextResponse, res: NextRequest) {
+export async function POST(req: NextRequest, res: NextResponse) {
   try {
+    if (req.method !== "POST") {
+      return NextResponse.json("Method Not Allowed");
+    }
     const { token } = await req.json();
 
     if (!token) {
