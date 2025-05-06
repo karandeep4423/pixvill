@@ -14,7 +14,7 @@ export async function generateMetadata({
   
   try {
     const res = await fetch(
-      `https://pixvill.com/api/image-detail?params=${params?.slug}`
+      `https://www.pixvill.com/api/image-detail?params=${params?.slug}`
     );
     const result = await res.json();
     if (!result)
@@ -27,7 +27,7 @@ export async function generateMetadata({
       title: result[0]?.imageTitle,
       description: result[0]?.imageDescription,
       alternates: {
-        canonical: `https://pixvill.com/${params.slug}`,
+        canonical: `https://www.pixvill.com/${params.slug}`,
       },
     };
   } catch (error) {
@@ -52,7 +52,7 @@ export async function generateStaticParams({
 
   try {
     const res = await fetch(
-      `https://pixvill.com/api/images?params=${params.slug}`
+      `https://www.pixvill.com/api/images?params=${params.slug}`
     );
 
     const result = await res.json();
