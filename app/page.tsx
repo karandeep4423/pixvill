@@ -15,7 +15,7 @@ export default function Home() {
 
   const fetchImage = async () => {
     try {
-      const res = await fetch("/api/images", {
+      const res = await fetch("/api/images?params=punjabi", {
         method: "GET",
       });
       const result = await res.json();

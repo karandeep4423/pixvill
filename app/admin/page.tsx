@@ -4,7 +4,6 @@ import { useDropzone } from "react-dropzone";
 import Pagination from "@/components/Pagination/page";
 import { TailSpin } from "react-loader-spinner";
 import { toast } from "react-toastify";
-import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import { useRouter, usePathname } from "next/navigation";
 import ImageDetailEdit from "@/components/admin-image-detail/page";
 export default function Home() {
@@ -23,6 +22,7 @@ export default function Home() {
   const [collection, setCollection] = useState<resultProps[]>([]);
   const [loader, setLoader] = useState(false);
   const [writeImageDetail, setWriteImageDetail] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const pageSize = 12;
@@ -212,26 +212,47 @@ export default function Home() {
     setWriteImageDetail(!writeImageDetail);
   };
 
-  const verifyToken = (token: string, secret: Secret): JwtPayload | null => {
-    try {
-      const decoded = jwt.verify(token, secret) as JwtPayload;
-      return decoded;
-    } catch (error) {
-      return null;
+  const verifyToken = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      if (pathname !== "/login") {
+        router.push("/login");
+      }
+      return;
     }
-  };
+    try {
+      // Changed to POST request
+      const response = await fetch("/api/verify-token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        // Optionally send token in body as well
+        body: JSON.stringify({ token }),
+      });
+      const data = await response.json();
 
-  useEffect(() => {
-    const authToken = localStorage.getItem("token");
-    if (
-      !authToken ||
-      !verifyToken(authToken, process.env.NEXT_PUBLIC_JWT as Secret)
-    ) {
+      if (data.valid === true) {
+        // Token is valid
+      } else {
+        // Token is invalid
+        localStorage.removeItem("token");
+          if (pathname !== "/login") {
+            router.push("/login");
+          }
+      }
+    } catch (error) {
+      localStorage.removeItem("token");
       if (pathname !== "/login") {
         router.push("/login");
       }
     }
-  }, [router]);
+  };
+
+  useEffect(() => {
+    verifyToken();
+  }, [pathname, router]);
 
   return (
     <div className="bg-black">

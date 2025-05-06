@@ -16,7 +16,7 @@ const imageDetail = new Schema<ImageDocumentDetail>(
     imageTitle: { type: String, required: true },
     imageDescription: { type: String, required: true },
     imageContent: { type: String, required: true },
-    imageAlt: { type: String, required: true },
+    imageAlt: { type: String, required: false },
   },
   { timestamps: true }
 );

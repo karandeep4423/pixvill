@@ -10,11 +10,11 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    template: "%s - Photo Grid",
-    default: "Where Images Speak a Thousand Wishes - Photo Grid",
+    template: "%s - PixVill",
+    default: "Where Images Speak a Thousand Wishes - PixVill",
   },
   description:
-    "Explore wishful images at Photo Grid, where sentiments from good mornings to celebrations are beautifully captured.",
+    "Explore wishful images at PixVill, where sentiments from good mornings to celebrations are beautifully captured.",
   icons: {
     icon: "/favicon.ico",
   },

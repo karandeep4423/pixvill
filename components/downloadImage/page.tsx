@@ -8,7 +8,6 @@ type DownloadButtonProps = {
 };
 
 const DownloadButton: React.FC<DownloadButtonProps> = ({ img, imgName }) => {
-  console.log("img", img);
   const [loader, setLoader] = useState(false);
   const downloadImage = async () => {
     setLoader(true);

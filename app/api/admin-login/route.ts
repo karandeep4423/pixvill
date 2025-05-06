@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     if (user) {
       const token = jwt.sign(
         { id: user?._id },
-        process.env.NEXT_PUBLIC_JWT as Secret
+        process.env.JWT_SECRET as Secret
       );
       return NextResponse.json({
         success: true,

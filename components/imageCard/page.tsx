@@ -25,6 +25,7 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
     _id: string;
     imageContent: string;
     imageAlt: string;
+    imageLanguage: string;
   };
 
   const handlePageChange = (page: number) => {
@@ -92,6 +93,39 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
   };
 
   const altTags = content?.map((img: resultProps) => img?.imageAlt?.split(","));
+
+  useEffect(() => {
+    if (content.length > 0 && collection.length > 0) {
+      const altTags = content[0].imageAlt.split(",");
+      const jsonLd = collection.map((img, i) => {
+        const alIndex = (currentPage - 1) * pageSize + i;
+        const altText = altTags[alIndex] || `${img.imageCategory}-image`;
+        return {
+          "@context": "https://schema.org",
+          "@type": "ImageObject",
+          contentUrl: `https://www.photo-grid.org/${img.image.replace(
+            "https://s3.eu-central-1.amazonaws.com/photo-grid.org/",
+            ""
+          )}`,
+          name: img.imageCategory,
+          description: altText,
+          inLanguage: img.imageLanguage,
+          width: 1134,
+          height: 1400,
+          keywords: img.imageCategory.split(/[- ]/).filter(Boolean), 
+        };
+      });
+
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.innerHTML = JSON.stringify(jsonLd);
+      document.head.appendChild(script);
+
+      return () => {
+        document.head.removeChild(script);
+      };
+    }
+  }, [collection, content, currentPage, pageSize]);
 
   return (
     <div className="max-w-screen-xl m-auto">
@@ -207,13 +241,14 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
           </div>
           {/* Content of page */}
           <div className="mb-8 sm:mb-10">
-            {content?.map((img: resultProps, i: number) => {
-              return (
-                <p key={i} className="whitespace-pre-line px-10 my-2 ">
-                  {img.imageContent}
-                </p>
-              );
-            })}
+            {content?.map((img, i) => (
+              <div key={i} className="px-10 my-2">
+                <div
+                  className="prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: img.imageContent }}
+                />
+              </div>
+            ))}
           </div>
         </div>
       )}

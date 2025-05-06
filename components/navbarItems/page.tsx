@@ -11,40 +11,36 @@ export const NavItems = [
     subItems: [
       {
         label: "Punjabi Shayari",
-        href: "/immagini-buongiorno",
+        href: "/punjabi-shayari",
         subItems: [
           {
-            label: "Buongiorno amore mio",
-            href: "/buongiorno-amore-mio",
+            label: "Punjabi Love Shayari",
+            href: "/punjabi-love-shayari",
           },
           {
-            label: "Buongiorno nuovissimi",
-            href: "/buongiorno-nuovissimi",
-          },
-          {
-            label: "Buongiorno gratis",
-            href: "/100-immagini-buongiorno-gratis-per-whatsapp",
-          },
+            label: "Punjabi Love Shayari 2 lines",
+            href: "/punjabi-love-shayari-2-lines",
+          }
         ],
       },
-      {
-        label: "Immagini Buonanotte",
-        href: "/immagini-buonanotte",
-        subItems: [
-          {
-            label: "Buonanotte divertente",
-            href: "/buonanotte-divertente",
-          },
-          {
-            label: "Buonanotte a domani",
-            href: "/buonanotte-a-domani",
-          },
-          {
-            label: "Buonanotte con affetto",
-            href: "/buonanotte-con-affetto",
-          },
-        ],
-      },
+      // {
+      //   label: "Immagini Buonanotte",
+      //   href: "/immagini-buonanotte",
+      //   subItems: [
+      //     {
+      //       label: "Buonanotte divertente",
+      //       href: "/buonanotte-divertente",
+      //     },
+      //     {
+      //       label: "Buonanotte a domani",
+      //       href: "/buonanotte-a-domani",
+      //     },
+      //     {
+      //       label: "Buonanotte con affetto",
+      //       href: "/buonanotte-con-affetto",
+      //     },
+      //   ],
+      // },
     ],
   },
   // {

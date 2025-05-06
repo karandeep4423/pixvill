@@ -18,13 +18,10 @@ const Footer = () => {
           </div>
           <div className="flex flex-col text-gray-300 font-medium space-y-4 pt-10">
             <h2 className="text-xl font-medium text-white">Punjabi Images</h2>
-            <Link href="/immagini-buongiorno">Immagini Buongiorno</Link>
-            <Link href="/immagini-buonanotte">Immagini Buonanotte</Link>
-            <Link href="/buongiorno-amore-mio">Buongiorno amore mio</Link>
-            <Link href="/buongiorno-nuovissimi">Buongiorno nuovissimi</Link>
-            <Link href="/100-immagini-buongiorno-gratis-per-whatsapp">
-              Buongiorno gratis
-            </Link>
+            <Link href="/punjabi-shayari">Punjabi Shayari</Link>
+            <Link href="/punjabi-love-shayari">Punjabi Love Shayari</Link>
+            <Link href="/punjabi-love-shayari-2-lines">Punjabi Love Shayari 2 lines</Link>
+           
           </div>
           {/* <div className="flex flex-col text-gray-300 font-medium space-y-4 pt-10">
             <h2 className="text-xl font-medium text-white">Polish Images</h2>
