@@ -3,7 +3,7 @@ export const revalidate = 0;
 export default async function sitemap() {
   const baseUrl = "https://www.pixvill.com";
 
-  const res = await fetch("https://www.pixvill.com/api/images?params=punjabi");
+  const res = await fetch(`${baseUrl}/api/images?params=punjabi`);
 
   const result = await res.json();
 
