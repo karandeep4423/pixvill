@@ -24,7 +24,7 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
     imageCategory: string;
     _id: string;
     imageContent: string;
-    imageAlt: string;
+    altTag: string;
     imageLanguage: string;
   };
 
@@ -92,14 +92,9 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
     });
   };
 
-  const altTags = content?.map((img: resultProps) => img?.imageAlt?.split(","));
-
   useEffect(() => {
     if (content.length > 0 && collection.length > 0) {
-      const altTags = content[0].imageAlt.split(",");
       const jsonLd = collection.map((img, i) => {
-        const alIndex = (currentPage - 1) * pageSize + i;
-        const altText = altTags[alIndex] || `${img.imageCategory}-image`;
         return {
           "@context": "https://schema.org",
           "@type": "ImageObject",
@@ -108,11 +103,11 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
             ""
           )}`,
           name: img.imageCategory,
-          description: altText,
+          description: img.altTag,
           inLanguage: img.imageLanguage,
           width: 1134,
           height: 1400,
-          keywords: img.imageCategory.split(/[- ]/).filter(Boolean), 
+          keywords: img.imageCategory.split(/[- ]/).filter(Boolean),
         };
       });
 
@@ -174,7 +169,6 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
           {/* Image Grid */}
           <div className=" my-14  grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-10 px-5">
             {collection.map((img: resultProps, i: number) => {
-              const alIndex = (currentPage - 1) * pageSize + i;
               return (
                 <div
                   key={i}
@@ -189,13 +183,7 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
                           ""
                         ) || ""
                       }`}
-                      alt={
-                        altTags[0] == undefined
-                          ? `${img.imageCategory}-image`
-                          : altTags[0][alIndex] == undefined
-                          ? `${img.imageCategory}-image`
-                          : altTags[0][alIndex]
-                      }
+                      alt={img?.altTag || img?.imageCategory}
                       width={1134}
                       height={1400}
                       className="rounded-2xl  object-fill aspect-square w-full h-auto"

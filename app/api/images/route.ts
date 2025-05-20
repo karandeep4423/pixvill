@@ -8,19 +8,25 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const images = formData.getAll("images");
-    const imageName = formData.getAll("imageName");
+    const altTags = formData.getAll("altTags");
+    const imageName = formData.get("imageName");
     const imageCategory = formData.get("imageCategory");
     const imageLanguage = formData.get("imageLanguage");
-    if (!images.length || !imageCategory || !imageLanguage) {
+    if (
+      !altTags ||
+      !images.length ||
+      !imageCategory ||
+      !imageLanguage ||
+      !imageName
+    ) {
       return NextResponse.json(
         { error: "All fields are required." },
         { status: 400 }
       );
     }
-
     await connectToDb();
     const uploadedImages = await Promise.all(
-      images.map(async (image) => {
+      images.map(async (image, index) => {
         if (!(image instanceof Blob)) {
           return NextResponse.json(
             { error: "Invalid image provided." },
@@ -35,13 +41,15 @@ export async function POST(req: NextRequest) {
         const s3Url = await uploadFileToS3(
           bufferResize,
           imageName.toString(),
-          imageCategory.toString()
+          imageCategory.toString(),
+          altTags[index].toString()
         );
         return {
           image: s3Url,
           imageName: imageName.toString(),
           imageCategory: imageCategory.toString(),
           imageLanguage: imageLanguage.toString(),
+          altTag: altTags[index],
         };
       })
     );

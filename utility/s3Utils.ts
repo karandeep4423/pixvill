@@ -16,14 +16,19 @@ const s3Client = new S3Client({
 export async function uploadFileToS3(
   file: Buffer,
   folderName: string,
-  fileName: string
+  categoryName: string,
+  altTag: string
 ): Promise<string> {
-  const uid = new ShortUniqueId({ length: 10 });
+  const uid = new ShortUniqueId({ length: 5 });
   const shortId = uid.rnd();
 
   const params = {
     Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME!,
-    Key: `${folderName}/${fileName}/${fileName}-${shortId}.jpg`,
+    Key: `${folderName}/${categoryName}/${altTag
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/^-+|-+$/g, "")}-${shortId}.jpg`,
     Body: file,
     ContentType: "image/jpg",
   };
@@ -31,15 +36,24 @@ export async function uploadFileToS3(
   try {
     const command = new PutObjectCommand(params);
     await s3Client.send(command);
-    const s3Url = `https://s3.${process.env.NEXT_PUBLIC_AWS_S3_REGION}.amazonaws.com/${process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME}/${folderName}/${fileName}/${fileName}-${shortId}.jpg`;
+    const s3Url = `https://s3.${
+      process.env.NEXT_PUBLIC_AWS_S3_REGION
+    }.amazonaws.com/${
+      process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME
+    }/${folderName}/${categoryName}/${altTag
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/^-+|-+$/g, "")}-${shortId}.jpg`;
     return s3Url;
   } catch (error) {
     throw new Error("Failed to upload to S3");
   }
 }
 
-
-export async function deleteFileFromS3(s3FolderNameAndfilename: string): Promise<boolean> {
+export async function deleteFileFromS3(
+  s3FolderNameAndfilename: string
+): Promise<boolean> {
   try {
     const params = {
       Bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME,
@@ -50,7 +64,6 @@ export async function deleteFileFromS3(s3FolderNameAndfilename: string): Promise
     await s3Client.send(command);
     return true;
   } catch (error) {
-    console.error("Error deleting file from S3:", error);
     return false;
   }
 }

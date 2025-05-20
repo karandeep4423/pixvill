@@ -6,9 +6,14 @@ import { TailSpin } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import { useRouter, usePathname } from "next/navigation";
 import ImageDetailEdit from "@/components/admin-image-detail/page";
+
+interface ImageWithAlt {
+  file: File;
+  altTag: string;
+}
+
 export default function Home() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [imageNames, setImageNames] = useState<string[]>([]);
+  const [imagesWithAlt, setImagesWithAlt] = useState<ImageWithAlt[]>([]);
   const [imageName, setImageName] = useState("");
   const [imageCategory, setImageCategory] = useState("");
   const [imageLanguage, setImageLanguage] = useState("");
@@ -16,7 +21,6 @@ export default function Home() {
   const [imageDescription, setImageDescription] = useState("");
   const [imageContent, setImageContent] = useState("");
   const [searchImage, setSearchImage] = useState("");
-  const [imageAlt, setImageAlt] = useState("");
   const [data, setData] = useState<resultProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [collection, setCollection] = useState<resultProps[]>([]);
@@ -37,60 +41,49 @@ export default function Home() {
     imageContent: string;
     _id: string;
   };
+
   const onDrop = (acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.slice(0, 50); // Limit to 3 files for preview
-    setFiles([...files, ...newFiles]);
-    const newImageNames = newFiles.map((file) => file.name);
-    setImageNames([...imageNames, ...newImageNames]);
+    const newFiles = acceptedFiles.slice(0, 50);
+    const newImageData = newFiles.map(file => ({ file, altTag: '' }));
+    setImagesWithAlt(prev => [...prev, ...newImageData]);
   };
 
   const removeFile = (index: number) => {
-    const updatedFiles = [...files];
-    updatedFiles.splice(index, 1);
-    setFiles(updatedFiles);
+    setImagesWithAlt(prev => prev.filter((_, i) => i !== index));
+  };
 
-    const updatedImageNames = [...imageNames];
-    updatedImageNames.splice(index, 1);
-    setImageNames(updatedImageNames);
+  const handleAltTagChange = (index: number, value: string) => {
+    setImagesWithAlt(prev => {
+      const newImages = [...prev];
+      newImages[index] = { ...newImages[index], altTag: value };
+      return newImages;
+    });
   };
 
   const uploadImage = async (e: FormEvent) => {
     e.preventDefault();
-
-    if (!files.length || !imageCategory || !imageLanguage || !imageName) {
+    if (imagesWithAlt.some(image => !image.altTag.trim()) || !imagesWithAlt.length || !imageCategory || !imageLanguage || !imageName) {
       console.error("All fields are required");
       toast.error("All fields are required!");
       return;
     }
     setLoader(true);
     const formData = new FormData();
-    files.forEach((file, index) => {
-      formData.append("images", file);
-      formData.append("imageNames", imageNames[index]);
+    imagesWithAlt.forEach((imageData) => {
+      formData.append("images", imageData.file);
+      formData.append("altTags", imageData.altTag.trim());
     });
     formData.append(
       "imageName",
-      imageName
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/^-+|-+$/g, "")
+      imageName.trim().toLowerCase().replace(/\s+/g, "-").replace(/^-+|-+$/g, "")
     );
     formData.append(
       "imageCategory",
-      imageCategory
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/^-+|-+$/g, "")
+      imageCategory.trim().toLowerCase().replace(/\s+/g, "-").replace(/^-+|-+$/g, "")
     );
     formData.append(
       "imageLanguage",
-      imageLanguage
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/^-+|-+$/g, "")
+      imageLanguage.trim().toLowerCase().replace(/\s+/g, "-").replace(/^-+|-+$/g, "")
     );
     try {
       const res = await fetch("/api/images", {
@@ -101,15 +94,12 @@ export default function Home() {
       if (result.message === "success") {
         setLoader(false);
         fetchData();
-        setFiles([]);
-        setImageNames([]);
+        setImagesWithAlt([]);
         toast.success("Image saved successfully");
       } else {
-        console.error("Server error. Try again.");
         toast.error("Server error");
       }
     } catch (error: any) {
-      console.error("Error:", error);
       toast.error("Error:", error);
     }
   };
@@ -177,7 +167,6 @@ export default function Home() {
         imageTitle,
         imageDescription,
         imageContent,
-        imageAlt,
       }),
     });
     const result = await res.json();
@@ -194,6 +183,7 @@ export default function Home() {
     },
     onDrop,
   });
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     const to = pageSize * page;
@@ -201,6 +191,7 @@ export default function Home() {
     setCollection(data.slice(from, to));
     scrollToTop();
   };
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -221,14 +212,12 @@ export default function Home() {
       return;
     }
     try {
-      // Changed to POST request
       const response = await fetch("/api/verify-token", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        // Optionally send token in body as well
         body: JSON.stringify({ token }),
       });
       const data = await response.json();
@@ -236,11 +225,10 @@ export default function Home() {
       if (data.valid === true) {
         // Token is valid
       } else {
-        // Token is invalid
         localStorage.removeItem("token");
-          if (pathname !== "/login") {
-            router.push("/login");
-          }
+        if (pathname !== "/login") {
+          router.push("/login");
+        }
       }
     } catch (error) {
       localStorage.removeItem("token");
@@ -256,7 +244,7 @@ export default function Home() {
 
   return (
     <div className="bg-black">
-      <div className="mx-10 sm:mx-32  relative max-w-screen-xl xl:m-auto">
+      <div className="mx-10 sm:mx-32 relative max-w-screen-xl xl:m-auto">
         {/* Heading buttons */}
         <div className="flex justify-center gap-2 items-center flex-col">
           <h1 className="text-3xl mt-3 font-bold text-gray-400 sm:text-5xl text-center">
@@ -268,7 +256,7 @@ export default function Home() {
                 localStorage.clear();
                 window.location.reload();
               }}
-              className="px-4 font-medium text-gray-100 text-base hover:border-white py-2 hover:bg-sky-700 bg-sky-600  rounded-xl"
+              className="px-4 font-medium text-gray-100 text-base hover:border-white py-2 hover:bg-sky-700 bg-sky-600 rounded-xl"
             >
               Logout
             </button>
@@ -334,28 +322,34 @@ export default function Home() {
               Drag drop files here, or click to select files
             </p>
           </div>
-          {files?.length > 0 && (
-            // Display selected files
+          {imagesWithAlt.length > 0 && (
             <div className="my-5">
-              {files.map((file, index) => (
+              {imagesWithAlt.map((imageData, index) => (
                 <div
                   key={index}
-                  className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between  border-2  p-3  rounded-lg  mt-3"
+                  className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between border-2 p-3 rounded-lg mt-3"
                 >
                   <div>
                     <img
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${file.name}`}
-                      width={250}
-                      height={250}
-                      className="w-16 rounded-lg h-16 object-cover "
+                      src={URL.createObjectURL(imageData.file)}
+                      alt={`Preview ${imageData.file.name}`}
+                      width={400}
+                      height={400}
+                      className="w-44 rounded-lg h-44 object-cover"
                     />
                   </div>
-                  <p className="text-gray-200">{file.name.slice(0, 30)}</p>
+                  <p className="text-gray-200">{imageData.file.name.slice(0, 30)}</p>
+                  <input
+                    type="text"
+                    value={imageData.altTag}
+                    onChange={(e) => handleAltTagChange(index, e.target.value)}
+                    placeholder="Enter alt tag"
+                    className="border-2 p-2 rounded-lg text-gray-900"
+                  />
                   <button
                     type="button"
                     onClick={() => removeFile(index)}
-                    className="p-1.5 sm:p-2 border-2 rounded-lg  text-red-600"
+                    className="p-1.5 sm:p-2 border-2 rounded-lg text-red-600"
                   >
                     Remove
                   </button>
@@ -364,16 +358,16 @@ export default function Home() {
             </div>
           )}
           {/* Images and image details uploader */}
-          <div className="relative mt-5   z-0 w-full mb-4 group">
+          <div className="relative mt-5 z-0 w-full mb-4 group">
             <input
               value={imageName}
               onChange={(e) => setImageName(e.target.value)}
               type="text"
-              className="font-bold text-2xl block background-transparent overflow-hidden py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
+              className="font-bold text-2xl block background-transparent overflow-hidden py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
               placeholder=" "
               required
             />
-            <label className=" peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            <label className="peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
               {writeImageDetail == false
                 ? "Write image name(Parent category)"
                 : "write category/url/image name for saving details"}
@@ -381,82 +375,71 @@ export default function Home() {
           </div>
           {writeImageDetail == true ? (
             <>
-              <div className="relative  z-0 w-full mb-4 group">
+              <div className="relative z-0 w-full mb-4 group">
                 <input
                   value={imageTitle}
                   onChange={(e) => setImageTitle(e.target.value)}
                   type="text"
-                  className="font-bold text-2xl block background-transparent overflow-hidden py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
+                  className="font-bold text-2xl block background-transparent overflow-hidden py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
                   placeholder=" "
                 />
-                <label className=" peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                <label className="peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                   Write image Title
                 </label>
               </div>
-              <div className="relative  z-0 w-full mb-4 group">
+              <div className="relative z-0 w-full mb-4 group">
                 <textarea
                   value={imageDescription}
                   onChange={(e) => setImageDescription(e.target.value)}
-                  className=" h-24 font-medium text-xl block background-transparent overflow-hidden py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
+                  className="h-24 font-medium text-xl block background-transparent overflow-hidden py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
                   placeholder=" "
                 />
-                <label className=" peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                <label className="peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                   Write image Description
                 </label>
               </div>
-              <div className="relative  z-0 w-full mb-4 group">
+              <div className="relative z-0 w-full mb-4 group">
                 <textarea
                   value={imageContent}
                   onChange={(e) => setImageContent(e.target.value)}
-                  className="h-24 font-medium text-xl block background-transparent overflow-hidden py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
+                  className="h-24 font-medium text-xl block background-transparent overflow-hidden py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
                   placeholder=" "
                 />
-                <label className=" peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+                <label className="peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                   Write image content
-                </label>
-              </div>
-              <div className="relative  z-0 w-full mb-4 group">
-                <textarea
-                  value={imageAlt}
-                  onChange={(e) => setImageAlt(e.target.value)}
-                  className=" h-24 font-medium text-xl block background-transparent overflow-hidden py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
-                  placeholder=" "
-                />
-                <label className=" peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                  Write image Alt tags
                 </label>
               </div>
             </>
           ) : (
-            <div className="relative  z-0 w-full mb-4 group">
+            <div className="relative z-0 w-full mb-4 group">
               <input
                 value={imageCategory}
-                onChange={(e) => setImageCategory(e.target.value)}
+                onChange={(e)  => setImageCategory(e.target.value)}
                 type="text"
-                className="font-bold text-2xl block background-transparent overflow-hidden py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
+                className="font-bold text-2xl block background-transparent overflow-hidden py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
                 placeholder=" "
                 required
               />
-              <label className=" peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+              <label className="peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                 Write image category/url(Child category)
               </label>
             </div>
           )}
 
-          <div className="relative  z-0 w-full mb-4 group">
+          <div className="relative z-0 w-full mb-4 group">
             <input
               value={imageLanguage}
               onChange={(e) => setImageLanguage(e.target.value)}
               type="text"
-              className="font-bold text-2xl block background-transparent overflow-hidden py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
+              className="font-bold text-2xl block background-transparent overflow-hidden py-2.5 px-0 w-full text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
               placeholder=" "
               required
             />
-            <label className=" peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            <label className="peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
               Write image language
             </label>
           </div>
-          <button className="flex items-center  justify-center text-lg font-medium w-6/12 py-2 rounded-xl  overflow-hidden group bg-sky-600 relative hover:bg-gradient-to-r hover:from-sky-600 hover:to-sky-600 text-white hover:ring-2 hover:ring-offset-2 hover:ring-sky-500 transition-all ease-out duration-300">
+          <button className="flex items-center justify-center text-lg font-medium w-6/12 py-2 rounded-xl overflow-hidden group bg-sky-600 relative hover:bg-gradient-to-r hover:from-sky-600 hover:to-sky-600 text-white hover:ring-2 hover:ring-offset-2 hover:ring-sky-500 transition-all ease-out duration-300">
             {loader ? (
               <TailSpin
                 visible={true}
@@ -480,7 +463,7 @@ export default function Home() {
           return (
             <div
               key={i}
-              className=" border-2 rounded-xl h-fit  border-gray-400"
+              className="border-2 rounded-xl h-fit border-gray-400"
             >
               <div>
                 <img

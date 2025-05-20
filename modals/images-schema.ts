@@ -5,6 +5,7 @@ export interface ImageDocument extends Document {
   imageName: string;
   imageCategory: string;
   imageLanguage: string;
+  altTag: String;
 }
 
 const imageSchema = new Schema<ImageDocument>(
@@ -13,6 +14,7 @@ const imageSchema = new Schema<ImageDocument>(
     imageName: { type: String, required: true },
     imageCategory: { type: String, required: true },
     imageLanguage: { type: String, required: true },
+    altTag: { type: String, required: true },
   },
   { timestamps: true }
 );

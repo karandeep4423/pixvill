@@ -6,7 +6,6 @@ export interface ImageDocumentDetail extends Document {
   imageTitle: string;
   imageDescription: string;
   imageContent: string;
-  imageAlt: string;
 }
 
 const imageDetail = new Schema<ImageDocumentDetail>(
@@ -16,7 +15,6 @@ const imageDetail = new Schema<ImageDocumentDetail>(
     imageTitle: { type: String, required: true },
     imageDescription: { type: String, required: true },
     imageContent: { type: String, required: true },
-    imageAlt: { type: String, required: false },
   },
   { timestamps: true }
 );

@@ -35,7 +35,6 @@ type resultProps = {
   imageTitle: string;
   imageDescription: string;
   imageContent: string;
-  imageAlt:string;
   id: string;
 };
 export const ImageDetailEdit: React.FC<ImageDetailProps> = ({ url }) => {
@@ -46,7 +45,6 @@ export const ImageDetailEdit: React.FC<ImageDetailProps> = ({ url }) => {
   const [imageTitle, setImageTitle] = useState("");
   const [imageDescription, setImageDescription] = useState("");
   const [imageContent, setImageContent] = useState("");
-  const [imageAlt, setImageAlt] = useState("");
   const [id, setID] = useState(null);
   let subtitle: HTMLHeadingElement | null = null;
 
@@ -87,7 +85,6 @@ export const ImageDetailEdit: React.FC<ImageDetailProps> = ({ url }) => {
       setImageTitle(firstImageDetail.imageTitle);
       setImageDescription(firstImageDetail.imageDescription);
       setImageContent(firstImageDetail.imageContent);
-      setImageAlt(firstImageDetail.imageAlt);
       setID(firstImageDetail._id);
     }
   };
@@ -114,7 +111,6 @@ export const ImageDetailEdit: React.FC<ImageDetailProps> = ({ url }) => {
           imageTitle,
           imageDescription,
           imageContent,
-          imageAlt,
         }),
       });
       const result = await res.json();
@@ -124,7 +120,6 @@ export const ImageDetailEdit: React.FC<ImageDetailProps> = ({ url }) => {
         toast.success("Image deatils updated successfully!");
       }
     } catch (error) {
-      console.error("Error updating image:", error);
       toast.error("Server error,Try again");
     }
   };
@@ -238,17 +233,6 @@ export const ImageDetailEdit: React.FC<ImageDetailProps> = ({ url }) => {
               />
               <label className=" peer-focus:font-medium absolute text-xl text-gray-200 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                 Write image content
-              </label>
-            </div>
-            <div className="relative  z-0 w-full mb-4 group">
-              <textarea
-                value={imageAlt}
-                onChange={(e) => setImageAlt(e.target.value)}
-                className=" h-24 font-medium text-xl block background-transparent overflow-hidden py-2.5 px-0 w-full  text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-sky-500 focus:outline-none focus:ring-0 focus:border-sky-600 peer"
-                placeholder=" "
-              />
-              <label className=" peer-focus:font-medium absolute text-2xl text-gray-500 dark:text-gray-500 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-sky-600 peer-focus:dark:text-sky-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                Write image Alt tags
               </label>
             </div>
             <div className="flex justify-around items-center">
