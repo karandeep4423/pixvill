@@ -18,6 +18,10 @@ export const NavItems = [
             href: "/punjabi-love-shayari",
           },
           {
+            label: "Broken Heart Shayari",
+            href: "/breakup-and-broken-heart-shayari-in-punjabi",
+          },
+          {
             label: "Punjabi Love Shayari 2 lines",
             href: "/punjabi-love-shayari-2-lines",
           }
