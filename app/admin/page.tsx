@@ -467,7 +467,7 @@ export default function Home() {
             >
               <div>
                 <img
-                  src={`https://www.photo-grid.org/${
+                  src={`https://www.pixvill.com/${
                     img?.image?.replace(
                       "https://s3.eu-central-1.amazonaws.com/photo-grid.org/",
                       ""
