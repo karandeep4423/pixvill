@@ -98,7 +98,7 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
         return {
           "@context": "https://schema.org",
           "@type": "ImageObject",
-          contentUrl: `https://www.photo-grid.org/${img.image.replace(
+          contentUrl: `https://www.pixvill.com/${img.image.replace(
             "https://s3.eu-central-1.amazonaws.com/photo-grid.org/",
             ""
           )}`,
@@ -177,7 +177,7 @@ const ImageCard: React.FC<ImageProps> = ({ params }) => {
                 >
                   <div>
                     <img
-                      src={`https://www.photo-grid.org/${
+                      src={`https://www.pixvill.com/${
                         img?.image?.replace(
                           "https://s3.eu-central-1.amazonaws.com/photo-grid.org/",
                           ""

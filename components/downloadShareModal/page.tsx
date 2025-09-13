@@ -39,7 +39,7 @@ const DownloadShareModal: React.FC<ModalProps> = ({ image, imageName }) => {
           <DownloadButton img={image} imgName={imageName} />
           <div id="root">
             <ShareButton
-              url={`https://www.photo-grid.org/${
+              url={`https://d1zs065awsyu72.cloudfront.net/${
                 image?.replace(
                   "https://s3.eu-central-1.amazonaws.com/photo-grid.org/",
                   ""

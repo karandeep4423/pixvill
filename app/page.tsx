@@ -91,7 +91,7 @@ export default function Home() {
                 <Link href={img.imageName}>
                   <img
                     className="m-auto rounded-xl object-fill aspect-square w-full h-auto "
-                    src={`https://www.photo-grid.org/${
+                    src={`https://www.pixvill.com/${
                       img?.image?.replace(
                         "https://s3.eu-central-1.amazonaws.com/photo-grid.org/",
                         ""
